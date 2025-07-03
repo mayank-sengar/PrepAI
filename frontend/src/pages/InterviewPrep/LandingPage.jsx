@@ -4,8 +4,9 @@ import { features } from '../../utils/data'
 import heroimage from '../../assets/heroimage.png'
 import { useNavigate } from 'react-router-dom'
 import {LuSparkles} from 'react-icons/lu'
-
-
+import Login from '../Auth/Login.jsx'
+import SignUp from '../Auth/SignUp'
+import Modal from '../../components/Modal.jsx'
 function LandingPage() {
     const navigate=useNavigate();
      
@@ -13,7 +14,7 @@ function LandingPage() {
     const [currentPage,setCurrentPage] = useState("login");
 
    const handleOnClickLoginSignup= function (){
-
+    setOpenAuth(!openAuth);
     }
 
 
@@ -26,7 +27,8 @@ function LandingPage() {
                 <div className="flex justify-between  items-center">
                 <div className='text-2xl black border px-1 font-bold'>PrepAI</div>
                 <button onClick={handleOnClickLoginSignup} 
-                className='bg-purple-700 p-1.5 px-3 rounded-full text-sm text-semibold hover:bg-violet-600 hover:cursor-ponter'>Login/SignUp</button>
+                className='bg-purple-700 p-1.5 px-3 rounded-full text-sm text-semibold
+                 hover:bg-violet-600 hover:cursor-pointer '>Login/SignUp</button>
             </div>
             </div>
 
@@ -45,7 +47,8 @@ function LandingPage() {
                     <p className="max-w-4xl text-lg text-amber-50 text-center mb-6">
                         Get role-specific questions, expand answers when you need them, dive deeper into concepts, and organize everything your way. From preparation to mastery — your ultimate interview toolkit is here.
                     </p>
-                    <button className="bg-gray-800 text-white font-semibold rounded-full px-6 py-3 my-3 text-base hover:bg-neutral-800 transition-all">
+                    <button className="bg-gray-800 text-white font-semibold rounded-full 
+                    px-6 py-3 my-3 text-base hover:bg-neutral-800 transition-all hover:cursor-pointer ">
                         Get Started
                     </button>
                 </div>
@@ -60,7 +63,6 @@ function LandingPage() {
               />
             </section>
           </div>
-
          <div className='flex justify-center align-center  text-3xl font-bold py-20'>
             Feautres that boost your learning
          </div>
@@ -87,7 +89,28 @@ add footer href */}
              </div>
            </div>
          </footer>
+{/*  
+ Modal */}
 
+ <Modal
+ isOpen = {openAuth}
+ onClose={()=>{
+    setOpenAuth(false);
+    setCurrentPage("login");
+ }}
+ hideHeader
+ >
+
+    <div>
+        {currentPage === "login" &&(
+            <Login setCurrentPage={setCurrentPage} />
+        )}
+         {currentPage === "signup" &&(
+            <SignUp setCurrentPage={setCurrentPage} />
+        )}
+    </div>
+
+ </Modal>
 
         
     </div>
