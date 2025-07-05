@@ -4,9 +4,12 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 
-const ai=new genAI.GoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_AI_API_KEY
-});
+
+// console.log("Google API Key:", process.env.GOOGLE_AI_API_KEY);
+
+
+ const ai = new genAI.GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+
 
 //generate interview questions and answers using gemini
 const generateInterviewQuestions =asyncHandler(async (req, res) => {
@@ -21,20 +24,27 @@ const generateInterviewQuestions =asyncHandler(async (req, res) => {
    if(!prompt) {
        throw new ApiError(400, "Invalid prompt");
    }
-   const response = await ai.generateContent({
-       model: 'gemini-2.0-flash-lite',
-       contents: prompt,
-    })
-    
-    let rawText=response.text;
 
-    const cleanedText = rawText
-        .replace(/^```json\s*/,"") // Remove starting ```json
-        .replace(/```$/,"") //remove ending ```
-        .trim();
+   const model = ai.getGenerativeModel({ model: "gemini-2.5-pro" });
+
+const result = await model.generateContent(prompt);
+const response = await result.response;
+const rawText = await response.text();
+
+
+
+   const cleanedText = rawText
+       .replace(/^```json\s*/,"") // Remove starting ```json
+       .replace(/```$/,"") //remove ending ```
+       .trim();
 
 //parsing the cleaned text
-const data=JSON.parse(cleanedText);
+let data;
+try {
+    data = JSON.parse(cleanedText);
+} catch (e) {
+    throw new ApiError(500, "Failed to parse AI response as JSON");
+}
 
 res.status(200).json(
     new ApiResponse(200,data, "Interview questions generated successfully")
@@ -45,7 +55,34 @@ res.status(200).json(
 
 //generate concept explanation using gemini
  const generateConceptExplanation = asyncHandler(async (req, res) => {
-  
+    // console.log("REQ BODY:", req.body);
+    const {question} = req.body 
+
+    if (!question) {
+        return res.status(400).json({ message: "Missing required field" });
+    }
+
+    const prompt = conceptExplainPrompt(question);
+    const model = ai.getGenerativeModel({ model: "gemini-2.5-pro" });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const rawText = await response.text();
+
+    const cleanedText = rawText
+        .replace(/^```json\s*/, "")
+        .replace(/```$/, "")
+        .trim();
+
+    let data;
+    try {
+        data = JSON.parse(cleanedText);
+    } catch (e) {
+        throw new ApiError(500, "Failed to parse AI response as JSON");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, data, "Concept explanation generated successfully")
+    );
 });
 
 export {generateInterviewQuestions,generateConceptExplanation};

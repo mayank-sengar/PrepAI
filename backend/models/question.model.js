@@ -1,9 +1,10 @@
-const mongoose= require('mongoose');
+import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
 session:{
     type:mongoose.Schema.Types.ObjectId,
-    ref:"Session"}
+    ref:"Session"
+}
 ,questions:{
     type:String,
 },

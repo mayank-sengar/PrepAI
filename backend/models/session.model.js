@@ -1,31 +1,30 @@
-const mongoose = require('mongoose');
-import { required } from '../node_modules/zod/src/v4/mini/schemas';
-import { User } from './user.model';
+import mongoose from "mongoose";
+import { User } from "./user.model.js";
 
 const sessionSchema = new mongoose.Schema({
-user:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:"User"
-},
-role:{
-    type:"String",
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+  role: {
+    type: String,
     required: true,
-},
-experience:{
-    type:"String",
+  },
+  experience: {
+    type: String,
     required: true,
-},
-topicsToFocus:{
-    type:String,
+  },
+  topicsToFocus: {
+    type: String,
     required: true,
-},
-description : String,
-questions:[{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:"Question"
-}]
-},{
-    timestamps:true
+  },
+  description: String,
+  questions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Question"
+  }]
+}, {
+  timestamps: true
 });
 
-export const Session = mongoose.model('Session', sessionSchema);
+export const Session = mongoose.model("Session", sessionSchema);

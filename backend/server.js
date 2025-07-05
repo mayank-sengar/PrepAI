@@ -13,7 +13,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "./.env") });
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
-// import {sessionRoutes} from "./routes/sessionRoutes.js";
+import sessionRoutes from "./routes/sessionRoutes.js";
+import questionRoutes from "./routes/questionRoutes.js"
 import {generateInterviewQuestions,generateConceptExplanation} from './controllers/aiControllers.js';
 import { verifyJWT } from "./middlewares/authMiddleware.js";
 const app=express();
@@ -31,12 +32,10 @@ connectDB();
 
 //Routes
 app.use("/api/auth", authRoutes);
-// app.use('/api/sessions',sessionRoutes);
-// app.use('/api/questions',questionRoutes);
+app.use('/api/sessions',sessionRoutes);
+app.use('/api/questions',questionRoutes);
 app.post("/api/ai/generate-questions", verifyJWT, generateInterviewQuestions);
 app.post("/api/ai/generate-explanation", verifyJWT, generateConceptExplanation);
-
-
 
 //start server
 const PORT= process.env.PORT || 5000;
