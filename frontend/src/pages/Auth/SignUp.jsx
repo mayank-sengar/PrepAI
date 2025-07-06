@@ -4,6 +4,11 @@ import {Eye} from 'lucide-react'
 import { EyeOff } from 'lucide-react';
 import ProfilePhotoSelector from '../../components/ProfilePhotoSelector';
 import { validateEmail } from '../../utils/helper';
+import axiosInstance from '../../utils/axiosInstance';
+import { API_PATHS } from '../../utils/apiPaths';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+
 function SignUp({setCurrentPage}) {
   const [profilePic,setProfilePic]=useState("");
   const [preview, setPreview] = useState(null);
@@ -12,6 +17,7 @@ function SignUp({setCurrentPage}) {
   const [password,setPassword] =useState("");
   const [showPassword ,setShowPassword]=useState(false);
   const [error,setError] = useState("");
+  const navigate = useNavigate();
 
   const handleFormSubmit= async (e)=>{
     e.preventDefault();
@@ -30,17 +36,31 @@ function SignUp({setCurrentPage}) {
       return;
     }
 
-     try{
-      
+    try{
+      const formData = new FormData();
+      formData.append("fullName", fullName);
+      formData.append("email", email);
+      formData.append("password", password);
+      if (profilePic) {
+        formData.append("avatar", profilePic);
+      }
+      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if(response.status === 201){
+        toast.success("Signup successful! You can now log in.");
+        navigate("/");
+      }
     }
     catch(error){
-      if(error.response && error.response.data.message){
-        setError(error.responsedata.message)
+      if(error){
+        setError(error.response.data.message);
       }
       else{
-        setError("Something went wrong.Please try again");
+        setError("Something went wrong. Please try again");
       }
     }
+
 
 
   }
@@ -107,16 +127,13 @@ function SignUp({setCurrentPage}) {
         </div>
       </label>
 
-       {error && <p>{error}</p>}
-
+       {error && <p className='text-red-600'>{error}</p>}
       <button type="submit"
         className="mt-2 py-2 px-6 rounded-full font-bold text-white bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 shadow-lg
          hover:from-purple-600 hover:via-pink-600 hover:to-yellow-400 transition-all duration-200
           focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 hover:cursor-pointer ">
         SIGN UP
       </button>
-
-         {error && <p>{error}</p>}
      <div className="flex text-sm">
       <p>
         Already Have an account? 

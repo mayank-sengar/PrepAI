@@ -7,7 +7,13 @@ import {LuSparkles} from 'react-icons/lu'
 import Login from '../Auth/Login.jsx'
 import SignUp from '../Auth/SignUp'
 import Modal from '../../components/Modal.jsx'
+import { useContext } from 'react'
+import { UserContext } from '../../context/userContext.jsx'
+import ProfileInfoCard from '../../components/cards/ProfileInfoCard.jsx'
+
 function LandingPage() {
+  const {user} = useContext(UserContext);
+
     const navigate=useNavigate();
      
     const [openAuth,setOpenAuth] = useState(false);
@@ -15,6 +21,13 @@ function LandingPage() {
 
    const handleOnClickLoginSignup= function (){
     setOpenAuth(!openAuth);
+    }
+    const handleOnCLickGetStarted = function (){
+      if(user){
+        navigate("/dashboard");
+      } else {
+       handleOnClickLoginSignup();
+      }
     }
 
 
@@ -25,10 +38,14 @@ function LandingPage() {
             {/* header */}
             <div className="container mx-auto px-4 pt-6 pb-[200px] relative z-10  ">
                 <div className="flex justify-between  items-center">
+                  <button onClick={()=>navigate("/")}  className="cursor-pointer">
                 <div className='text-2xl black border px-1 font-bold'>PrepAI</div>
-                <button onClick={handleOnClickLoginSignup} 
+                </button>
+               { user ? 
+               ( <ProfileInfoCard/>  )
+               : ( <button onClick={handleOnClickLoginSignup} 
                 className='bg-purple-700 p-1.5 px-3 rounded-full text-sm text-semibold
-                 hover:bg-violet-600 hover:cursor-pointer '>Login/SignUp</button>
+                hover:bg-violet-600 hover:cursor-pointer '>Login/SignUp</button> )}
             </div>
             </div>
 
@@ -48,7 +65,7 @@ function LandingPage() {
                         Get role-specific questions, expand answers when you need them, dive deeper into concepts, and organize everything your way. From preparation to mastery — your ultimate interview toolkit is here.
                     </p>
                     <button className="bg-gray-800 text-white font-semibold rounded-full 
-                    px-6 py-3 my-3 text-base hover:bg-neutral-800 transition-all hover:cursor-pointer ">
+                    px-6 py-3 my-3 text-base hover:bg-neutral-800 transition-all hover:cursor-pointer  " onClick={handleOnCLickGetStarted}>
                         Get Started
                     </button>
                 </div>

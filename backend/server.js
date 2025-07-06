@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
 
 // Required for __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -19,13 +20,13 @@ import {generateInterviewQuestions,generateConceptExplanation} from './controlle
 import { verifyJWT } from "./middlewares/authMiddleware.js";
 const app=express();
 app.use(cors({
-    origin:"*",
-    methods:["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders:["Content-Type", "Authorization"],
+    origin: "http://localhost:5173",
+    credentials: true
 }));
 
 //express.json() parses that JSON and attaches it to req.body
 app.use(express.json());
+app.use(cookieParser());
 
 // Connect to MongoDB before starting the server
 connectDB();
@@ -36,6 +37,24 @@ app.use('/api/sessions',sessionRoutes);
 app.use('/api/questions',questionRoutes);
 app.post("/api/ai/generate-questions", verifyJWT, generateInterviewQuestions);
 app.post("/api/ai/generate-explanation", verifyJWT, generateConceptExplanation);
+
+// Global error handler
+app.use((err, req, res, next) => {
+    // If the error is an instance of ApiError, use its status and message
+    if (err && err.statusCode) {
+        return res.status(err.statusCode).json({
+            success: false,
+            message: err.message,
+            data: null
+        });
+    }
+    // Otherwise, fallback to generic 500
+    res.status(500).json({
+        success: false,
+        message: err?.message || "Internal Server Error",
+        data: null
+    });
+});
 
 //start server
 const PORT= process.env.PORT || 5000;

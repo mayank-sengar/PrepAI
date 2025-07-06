@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import SignUp from './SignUp';
 import { validateEmail } from '../../utils/helper';
+import axiosInstance from '../../utils/axiosInstance';
+import { API_PATHS } from '../../utils/apiPaths';
 function Login({setCurrentPage}) {
 
   const [email,setEmail]=useState("");
@@ -28,7 +30,13 @@ function Login({setCurrentPage}) {
     
     //login api call
     try{
-      
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN,{
+        email,
+        password,
+      });
+      if(response.status === 200){
+        navigate("/dashboard");
+      }
     }
     catch(error){
       if(error.response && error.response.data.message){
