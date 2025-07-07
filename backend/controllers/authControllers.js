@@ -131,7 +131,8 @@ const loginUser = asyncHandler(async (req, res) =>{
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: 'None',
     }
 
     return res
@@ -165,7 +166,9 @@ const logoutUser = asyncHandler(async(req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: 'None',
+        // domain: '.onrender.com' // Uncomment if you want to restrict to your root domain
     }
 
     return res
@@ -201,7 +204,9 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     
         const options = {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: 'None',
+            // domain: '.onrender.com' // Uncomment if you want to restrict to your root domain
         }
     
         const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
