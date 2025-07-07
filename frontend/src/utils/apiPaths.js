@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:8000";
+export const BASE_URL = `${import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"}`;
 
 export const API_PATHS={
     AUTH:{
@@ -21,7 +21,7 @@ export const API_PATHS={
     },
 
     QUESTION:{
-        ADD_TO_SESSION: "api/questions/add", // add more questions to a session
+        ADD_TO_SESSION: "/api/questions/add", // add more questions to a session
         PIN: (id) => `/api/questions/${id}/pin`, // pin or unpin a question
         UPDATE_NOTE: (id)=> `/api/questions/${id}/note`, // Update/Add a note to a question
     },
