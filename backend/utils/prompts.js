@@ -5,9 +5,11 @@ Task:
 - Role: ${role}
 - Candidate Experience: ${experience} years
 - Focus Topics: ${topicsToFocus}
-- Write ${numberOfQuestions} interview questions.
+- Write exactly ${numberOfQuestions} unique and varied interview questions.
 - For each question, generate a detailed but beginner-friendly answer.
 - If the answer needs a code example, add a small code block inside.
+- IMPORTANT: Return a JSON array of exactly ${numberOfQuestions} objects, even if you have to invent plausible questions to reach the count. Do not return fewer than ${numberOfQuestions} items.
+- Add a randomizer: ${Math.random()} and timestamp: ${Date.now()} to ensure uniqueness.
 - Keep formatting very clean.
 - Return a pure JSON array like:
 
@@ -43,6 +45,6 @@ Important: Do NOT add any extra text outside the JSON format. Only return valid 
 `);
 
 
-export { questionAnswerPrompt, conceptExplainPrompt };  
+export { questionAnswerPrompt, conceptExplainPrompt };
 
 

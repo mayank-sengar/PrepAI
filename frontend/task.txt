@@ -1,0 +1,7 @@
+Checkpoints to finish:-
+
+--question fetch using ai
+--dashboard question updae status 
+--pin and note working 
+--generate explanation
+-- generate more questions

@@ -5,7 +5,7 @@ session:{
     type:mongoose.Schema.Types.ObjectId,
     ref:"Session"
 }
-,questions:{
+,question:{
     type:String,
 },
 answer:{

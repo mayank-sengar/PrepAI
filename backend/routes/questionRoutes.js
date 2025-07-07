@@ -6,7 +6,7 @@ const router=express.Router();
 
 router.route('/add').post(verifyJWT,addQuestionToSession);
 //question's id 
-router.route('/:id/pin').post(verifyJWT,togglePinQuestion);
-router.route('/:id/note').post(verifyJWT,updateQuestionNote);
+router.route('/:id/pin').patch(verifyJWT,togglePinQuestion);
+router.route('/:id/note').patch(verifyJWT,updateQuestionNote);
 
-export default router 
+export default router

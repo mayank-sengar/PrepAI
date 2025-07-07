@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Auth/Login.jsx";
 import SignUp from "./pages/Auth/SignUp.jsx";
 import Dashboard from './pages/Home/Dashboard.jsx';
-import InterviewPrep from './pages/InterviewPrep/InterviewPrep.jsx';
-import LandingPage from './pages/InterviewPrep/LandingPage.jsx';
+import InterviewPrep from './pages/InterviewPrep.jsx';
+import LandingPage from './pages/LandingPage.jsx';
 import { Toaster } from "react-hot-toast";
 import UserProvider from './context/userContext.jsx';
 

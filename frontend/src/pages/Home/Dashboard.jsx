@@ -4,12 +4,13 @@ import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import { toast } from 'react-hot-toast';
 import { UserContext } from '../../context/userContext';
-import ProfileInfoCard from './../../components/cards/ProfileInfoCard';
+import ProfileInfoCard from '../../components/ProfileInfoCard';
+import Navbar from '../../components/Navbar';
 function Dashboard() {
   const navigate = useNavigate();
   const [openCreateSessionModal, setOpenCreateSessionModal] = useState(false);
   const [sessions, setSessions] = useState([]); 
-  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
+  // const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [newSessionTitle, setNewSessionTitle] = useState("");
   const [newSessionDescription, setNewSessionDescription] = useState("");
   const [newSessionTopics, setNewSessionTopics] = useState("");
@@ -32,27 +33,39 @@ function Dashboard() {
   }
 
   const createSession = async () => {
-    if (!newSessionTitle) {
+    if (!newSessionTitle ) {
       toast.error("Session title is required");
       return;
     }
+    if(!newSessionExperience) {
+      toast.error("Experience is required");
+      return; 
+    }
     try {
       setLoading(true);
+
+      const aiResponse = await axiosInstance.post(API_PATHS.AI.GENERATE_QUESTIONS, {
+        role: newSessionTitle,  
+        experience: newSessionExperience,
+        topicsToFocus: newSessionTopics,
+        numberOfQuestions: 10,
+      });
+      console.log("AI Response:", aiResponse.data);
+      console.log("Generated Questions:", aiResponse.data.data);
+      const generatedQuestions = aiResponse.data.data || [];
       const res = await axiosInstance.post(API_PATHS.SESSION.CREATE, {
         role: newSessionTitle,
         experience: newSessionExperience,
         topicsToFocus: newSessionTopics,
         description: newSessionDescription,
-        questions: []
+        questions: generatedQuestions,
       });
+      console.log(res);
       toast.success("Session created!");
-      setOpenCreateSessionModal(false);
-      setNewSessionTitle("");
-      setNewSessionDescription("");
-      setNewSessionTopics("");
-      setNewSessionExperience("");
-      fetchSessions();
-    } catch (error) {
+      if(res.data?.data?._id){
+        navigate(`/interview-prep/${res.data.data._id}`); 
+      }
+    } catch(error) {
       toast.error("Error creating session");
       console.error("Error creating session:", error);
     } finally {
@@ -80,7 +93,7 @@ function Dashboard() {
 
   return (
     <div>
-      <div className="p-4 text-white">
+      {/* <div className="p-4 text-white">
         <div className="container mx-auto px-4 pt-6 relative z-10  ">
           <div className="flex justify-between  items-center">
             <button onClick={()=>navigate("/")}  className="cursor-pointer">
@@ -91,8 +104,10 @@ function Dashboard() {
               : null}
           </div>
         </div>
-      </div>
+      </div> */}
+      <Navbar />
       {/* Create Session Modal */}
+      
       {openCreateSessionModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg border border-gray-200 animate-fadeIn relative">
@@ -145,13 +160,14 @@ function Dashboard() {
               </div>
               <button
                 type="submit"
-                className="w-full py-3 rounded-md bg-black text-white font-semibold text-base hover:bg-gray-900 transition-all"
-                disabled={loading}
+                className="w-full py-3 rounded-md bg-black text-white font-semibold text-base hover:bg-gray-900 transition-all cursor-pointer"
+                disabled={loading} onClick={createSession} 
               >{loading ? 'Creating...' : 'Create Session'}</button>
             </form>
           </div>
-        </div>
+        </div>  
       )}
+    
       {/* Sessions List */}
       <div className="mt-4 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
@@ -160,31 +176,35 @@ function Dashboard() {
           <div className="text-center text-lg text-gray-400 w-full col-span-3">No sessions found.</div>
         ) : (
           sessions.map((session) => (
-            <div key={session._id} className="rounded-2xl border border-gray-200 bg-[#f8fdfc] shadow flex flex-col p-6 w-full">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-green-200 to-blue-100 font-bold text-2xl text-gray-700">
-                  {session.role?.slice(0,2).toUpperCase()}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-lg text-gray-800">{session.role}</span>
-                    <span className="text-xs text-gray-500">{session.topicsToFocus || ''}</span>
+            <div key={session._id} onClick={() => navigate(`/interview-prep/${session._id}`)} className="cursor-pointer">
+              <div className="rounded-2xl border border-gray-200 bg-[#f8fdfc] shadow flex flex-col p-6 w-full">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-green-200 to-blue-100 font-bold text-2xl text-gray-700">
+                    {session.role?.slice(0,2).toUpperCase()}
                   </div>
-                  <div className="text-gray-500 text-sm mb-1">{session.description || <span className='italic text-gray-400'>No description</span>}</div>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Experience: {session.experience || 'N/A'}</span>
-                    <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Q&A: {session.qaCount || 0}</span>
-                    <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Last Updated: {session.updatedAt ? new Date(session.updatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}</span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-lg text-gray-800">{session.role}</span>
+                      <span className="text-xs text-gray-500">{session.topicsToFocus || ''}</span>
+                    </div>
+                    <div className="text-gray-500 text-sm mb-1">{session.description || <span className='italic text-gray-400'>No description</span>}</div>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Experience: {session.experience || 'N/A'}</span>
+                      <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Q&A: {session.qaCount || 0}</span>
+                      <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Last Updated: {session.updatedAt ? new Date(session.updatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}</span>
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-400 mt-2">Preparing for frontend dev roles</div>
                 </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); 
+                    deleteSession(session._id);
+                  }}
+                  className="mt-4 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-semibold shadow hover:from-red-600 hover:to-pink-600 transition-all"
+                >
+                  Delete Session
+                </button>
               </div>
-              <button
-                onClick={() => deleteSession(session._id)}
-                className="mt-4 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-semibold shadow hover:from-red-600 hover:to-pink-600 transition-all"
-              >
-                Delete Session
-              </button>
             </div>
           ))
         )}

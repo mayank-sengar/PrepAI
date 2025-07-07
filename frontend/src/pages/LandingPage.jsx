@@ -1,15 +1,15 @@
 import React from 'react'
 import { useState } from 'react'
-import { features } from '../../utils/data'
-import heroimage from '../../assets/heroimage.png'
+import { features } from '../utils/data.js'
+import heroimage from '../assets/heroimage.png'
 import { useNavigate } from 'react-router-dom'
 import {LuSparkles} from 'react-icons/lu'
-import Login from '../Auth/Login.jsx'
-import SignUp from '../Auth/SignUp'
-import Modal from '../../components/Modal.jsx'
+import Login from './Auth/Login.jsx'
+import SignUp from './Auth/SignUp.jsx'
+import Modal from '../components/Modal.jsx'
 import { useContext } from 'react'
-import { UserContext } from '../../context/userContext.jsx'
-import ProfileInfoCard from '../../components/cards/ProfileInfoCard.jsx'
+import { UserContext } from '../context/userContext.jsx'
+import ProfileInfoCard from '../components/ProfileInfoCard.jsx'
 
 function LandingPage() {
   const {user} = useContext(UserContext);

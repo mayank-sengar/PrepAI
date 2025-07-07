@@ -27,11 +27,11 @@ const addQuestionToSession = asyncHandler(async(req,res)=>{
      )
 
      //Update session to add new question
-
      session.questions.push(...createdQuestion.map((q)=>q._id));
-     await session.save;
+     await session.save();
+    const updatedSession = await Session.findById(sessionId).populate('questions');
 
-     res.status(201).json( new ApiResponse(201,session,"Added questions to the session successfully"));
+    res.status(201).json(new ApiResponse(201, updatedSession, "Added questions to the session successfully"));
 });
 
 const togglePinQuestion =asyncHandler(async(req,res)=>{
