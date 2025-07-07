@@ -190,7 +190,7 @@ function Dashboard() {
                     <div className="text-gray-500 text-sm mb-1">{session.description || <span className='italic text-gray-400'>No description</span>}</div>
                     <div className="flex flex-wrap gap-2 mt-1">
                       <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Experience: {session.experience || 'N/A'}</span>
-                      <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Q&A: {session.qaCount || 0}</span>
+                      <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Q&A:{session.questions ? session.questions.length : (session.qaCount || 0)}</span>
                       <span className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-700 border">Last Updated: {session.updatedAt ? new Date(session.updatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}</span>
                     </div>
                   </div>
